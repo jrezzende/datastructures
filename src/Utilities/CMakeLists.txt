@@ -12,6 +12,7 @@ set(
 	UTILITIES_HEADERS
 	MyTimer.h
 	MyRandom.h
+	Node.h
 	List.h
 	LinkedList.h
 	LinkedQueue.h
