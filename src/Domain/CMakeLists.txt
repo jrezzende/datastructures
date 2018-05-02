@@ -5,12 +5,12 @@ set(DOMAIN_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 set(
 	DOMAIN_SRCS
-	Automobile.cpp
+	Vehicle.cpp
 )
 
 set(
 	DOMAIN_HEADERS
-	Automobile.h
+	Vehicle.h
 )
 
 add_library(domain STATIC ${DOMAIN_SRCS} ${DOMAIN_HEADERS})

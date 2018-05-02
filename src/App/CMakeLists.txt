@@ -5,11 +5,13 @@ set(MAIN_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 set(
 	MAIN_SRCS
+	App.cpp
+	main.cpp
 )
 
 set(
 	MAIN_HEADERS
-	main.cpp
+	App.h
 )
 
 add_executable(main ${MAIN_HEADERS} ${MAIN_SRCS})
