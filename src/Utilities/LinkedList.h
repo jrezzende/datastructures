@@ -7,10 +7,10 @@
 template <typename T>
 class LinkedList
 {
-   Node* head;
+   Node<T>* head;
    std::size_t size_;
 
-   Node* end() {
+   Node<T>* end() {
       auto it= head;
       for (auto i= 1; i < size(); ++i)
          it= it->next();
@@ -27,18 +27,15 @@ public:
    void insert(const T& data, std::size_t index);
    void insert_sorted(const T& data);
    T& at(std::size_t index);
-   T pop();
+   T pop(std::size_t index);
    T pop_back();
    T pop_front();
    void remove(const T& data);
    bool empty() const;
-   bool contains() const;
+   bool contains(const T& data) const;
    std::size_t find(const T& data) const;
    std::size_t size() const;
 };
-
-
-#endif // !INCLUDED_LINKEDLIST_H
 
 template<typename T>
 inline LinkedList<T>::~LinkedList()
@@ -56,79 +53,209 @@ inline LinkedList<T>::LinkedList()
 template<typename T>
 inline void LinkedList<T>::clear()
 {
-   Node<T>* current;
- 
+   Node<T>* current= head;
+   Node<T>* next_node;
+   while (current != nullptr) {
+      next_node= current->next();
+      delete current;
+      current= next_node;
+   }
+   head= nullptr;
+   size_= 0;
 }
 
 template<typename T>
 inline void LinkedList<T>::push_back(const T & data)
 {
+   Node<T>* new_node= new Node<T>(data);
+   if (new_node == nullptr)
+      throw std::out_of_range("LIST IS FULL!");
+   if (empty())
+      head= new_node;
+   else
+      end()->setNext(new_node);
+   size_++;
 }
 
 template<typename T>
 inline void LinkedList<T>::push_front(const T & data)
 {
+   Node<T>* new_node= new Node<T>(data);
+   if (new_node == nullptr)
+      throw std::out_of_range("LIST IS FULL!");
+   if (empty())
+      head= new_node;
+   else {
+      new_node->setNext(head);
+      head= new_node;
+   }
+   size_++;
 }
 
 template<typename T>
 inline void LinkedList<T>::insert(const T & data, std::size_t index)
 {
+   Node<T>* new_node= new Node<T>(data);
+   if(new_node == nullptr)
+      throw std::out_of_range("LIST IS FULL!");
+   if (index > size_ || index < 0)
+      throw std::out_of_range("INDEX OUT OF BOUNDS!");
+   if (empty())
+      head= new_node;
+   else {
+      Node<T>* aux= head;
+      for (int i= 1; i < index; i++)
+         aux= aux->next();
+      new_node->setNext(aux->next());
+      aux->setNext(new_node);
+   }
+   size_++;
 }
 
 template<typename T>
 inline void LinkedList<T>::insert_sorted(const T & data)
 {
+   if (empty())
+      push_front(data);
+   else {
+      Node<T>* aux= head;
+      int pos= 1;
+      while (aux->next() != nullptr && data > aux->data()) {
+         aux= aux->next();
+         pos++;
+      }
+      if (data > aux->data())
+         insert(data, pos + 1);
+      else 
+         insert(data, pos);
+   }
 }
 
 template<typename T>
-inline T & LinkedList<T>::at(std::size_t index)
+inline T& LinkedList<T>::at(std::size_t index)
 {
-   // TODO: insert return statement here
+   if (index < 0 || index >= size_)
+      throw std::out_of_range("INDEX OUT OF BOUNDS!");
+   Node<T>* aux= head;
+   for (int i= 0; i < index; i++)
+      aux= aux->next();
+   return aux->data();
 }
 
 template<typename T>
-inline T LinkedList<T>::pop()
+inline T LinkedList<T>::pop(std::size_t index)
 {
-   return T();
+   if (index < 0 || index >= size_)
+      throw std::out_of_bounds("INDEX OUT OF BOUNDS!");
+   if (index == 0)
+      return pop_front();
+
+   Node<T>* prev= head;
+   for (int i= 0; i < index - 2; i++)
+      prev= prev->next();
+   Node<T>* toBePopped= prev->next();
+   T temp= toBePopped->data();
+   prev->setNext(toBePopped->next());
+   size_--;
+
+   delete toBePopped;
+   return temp;
 }
 
 template<typename T>
 inline T LinkedList<T>::pop_back()
 {
-   return T();
+   if (empty())
+      throw std::out_of_range("LIST IS EMPTY!");
+
+   if (size_ == 1) {
+      Node<T>* aux= head;
+      T temp= aux->data();
+
+      delete tobePopped
+      head= nullptr;
+
+      size_--;
+      return temp;
+   }
+
+   Node<T>* tobePopped= end();
+   T temp= tobePopped->data();
+
+   size_--;
+
+   delete tobePopped;
+   return temp;
 }
 
 template<typename T>
 inline T LinkedList<T>::pop_front()
 {
-   return T();
+   if (empty())
+      throw std::out_of_range("LIST IS EMPTY!");
+
+   if (size_ == 1) {
+      Node<T>* aux= head;
+      T temp= aux->data();
+
+      delete aux;
+      head= nullptr;
+
+      size_--;
+      return temp;
+   }
+
+   Node<T>* toBePopped= head;
+   T temp= toBePopped->data();
+   head= toBePopped->next();
+
+   size_--;
+   delete toBePopped;
+   return temp;
 }
 
 template<typename T>
-inline void LinkedList<T>::remove(const T & data)
+inline void LinkedList<T>::remove(const T& data)
 {
+   if (size_ == 0)
+      throw std::out_of_range("LIST IS EMPTY!");
+   pop(find(data));
 }
 
 template<typename T>
 inline bool LinkedList<T>::empty() const
 {
-   return false;
+   return size_ == 0;
 }
 
 template<typename T>
-inline bool LinkedList<T>::contains() const
+inline bool LinkedList<T>::contains(const T& data) const
 {
+   if (empty())
+      return false;
+   Node<T>* aux= head;
+   for (int i= 0; i < size_; i++)
+      if (aux->data() == data)
+         return true;
    return false;
 }
 
 template<typename T>
 inline std::size_t LinkedList<T>::find(const T & data) const
 {
-   return std::size_t();
+   if (empty())
+      throw std::out_of_range("LIST IS EMPTY!");
+   Node<T>* aux= head;
+   for (int i= 0; i < size_; i++)
+      if (aux->data() == data)
+         return i;
+   return size_;
 }
 
 template<typename T>
 inline std::size_t LinkedList<T>::size() const
 {
-   return std::size_t();
+   return size_;
 }
+
+#endif // !INCLUDED_LINKEDLIST_H

@@ -1,5 +1,6 @@
 #include "Vehicle.h"
 #include "MyRandom.h"
+#include <cstdlib>
 
 Vehicle::Vehicle()
 {

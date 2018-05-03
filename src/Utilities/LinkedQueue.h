@@ -7,8 +7,8 @@
 template<typename T>
 class LinkedQueue
 {
-   Node* head;
-   Node* tail;
+   Node<T>* head;
+   Node<T>* tail;
    std::size_t size_;
 
 public:
@@ -26,8 +26,6 @@ public:
 
    std::size_t size() const;
 };
-
-#endif // !INCLUDED_LINKEDQUEUE_H
 
 template<typename T>
 inline LinkedQueue<T>::~LinkedQueue()
@@ -53,7 +51,7 @@ template<typename T>
 inline void LinkedQueue<T>::enqueue(const T & data)
 {
    if (empty()) {
-      head= new Node(data);
+      head= new Node<T>(data);
       tail= head;
    } 
    else {
@@ -76,7 +74,7 @@ inline T LinkedQueue<T>::dequeue()
       size_--;
       return temp;
    }
-   Node* current= head;
+   Node<T>* current= head;
    T temp= current->data();
    head= current->next();
    delete current;
@@ -111,3 +109,5 @@ inline std::size_t LinkedQueue<T>::size() const
 {
    return size_;
 }
+
+#endif // !INCLUDED_LINKEDQUEUE_H
