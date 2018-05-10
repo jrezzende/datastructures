@@ -17,6 +17,11 @@ set(
 	LinkedList.h
 	LinkedQueue.h
 	RingList.h
+	IndexException.h
+	EmptyStructureException.h
+	FullStructureException.h
+	InvalidDataException.h
+	RedSignException.h
 )
 
 add_library(utilities STATIC ${UTILITIES_HEADERS} ${UTILITIES_SRCS})

@@ -3,6 +3,10 @@
 #define INCLUDED_LINKEDLIST_H
 
 #include "Node.h"
+#include "EmptyStructureException.h"
+#include "FullStructureException.h"
+#include "IndexException.h"
+#include "InvalidDataException.h"
 
 template <typename T>
 class LinkedList
@@ -26,13 +30,17 @@ public:
    void push_front(const T& data);
    void insert(const T& data, std::size_t index);
    void insert_sorted(const T& data);
+
    T& at(std::size_t index);
    T pop(std::size_t index);
    T pop_back();
    T pop_front();
+   T pop_data(const T& data);
+
    void remove(const T& data);
    bool empty() const;
    bool contains(const T& data) const;
+
    std::size_t find(const T& data) const;
    std::size_t size() const;
 };
@@ -69,7 +77,7 @@ inline void LinkedList<T>::push_back(const T & data)
 {
    Node<T>* new_node= new Node<T>(data);
    if (new_node == nullptr)
-      throw std::out_of_range("LIST IS FULL!");
+      throw std::out_of_range();
    if (empty())
       head= new_node;
    else
@@ -81,8 +89,8 @@ template<typename T>
 inline void LinkedList<T>::push_front(const T & data)
 {
    Node<T>* new_node= new Node<T>(data);
-   if (new_node == nullptr)
-      throw std::out_of_range("LIST IS FULL!");
+   if (!new_node)
+      throw FullStructureException;
    if (empty())
       head= new_node;
    else {
@@ -96,12 +104,16 @@ template<typename T>
 inline void LinkedList<T>::insert(const T & data, std::size_t index)
 {
    Node<T>* new_node= new Node<T>(data);
-   if(new_node == nullptr)
-      throw std::out_of_range("LIST IS FULL!");
-   if (index > size_ || index < 0)
-      throw std::out_of_range("INDEX OUT OF BOUNDS!");
-   if (empty())
-      head= new_node;
+   if(!new_node)
+      throw FullStructureException();
+   else if (empty())
+      head = new_node;
+
+   if (index >= size_ )
+      push_back(data);
+   else if (index < 0)
+      throw IndexException();
+
    else {
       Node<T>* aux= head;
       for (int i= 1; i < index; i++)
@@ -134,8 +146,10 @@ inline void LinkedList<T>::insert_sorted(const T & data)
 template<typename T>
 inline T& LinkedList<T>::at(std::size_t index)
 {
+   if (empty())
+      throw EmptyStructureException();
    if (index < 0 || index >= size_)
-      throw std::out_of_range("INDEX OUT OF BOUNDS!");
+      throw IndexException();
    Node<T>* aux= head;
    for (int i= 0; i < index; i++)
       aux= aux->next();
@@ -145,8 +159,10 @@ inline T& LinkedList<T>::at(std::size_t index)
 template<typename T>
 inline T LinkedList<T>::pop(std::size_t index)
 {
-   if (index < 0 || index >= size_)
-      throw std::out_of_bounds("INDEX OUT OF BOUNDS!");
+   if (index >= size_)
+      pop_back();
+   if (index < 0)
+      throw IndexException();
    if (index == 0)
       return pop_front();
 
@@ -166,7 +182,7 @@ template<typename T>
 inline T LinkedList<T>::pop_back()
 {
    if (empty())
-      throw std::out_of_range("LIST IS EMPTY!");
+      throw EmptyStructureException();
 
    if (size_ == 1) {
       Node<T>* aux= head;
@@ -192,7 +208,7 @@ template<typename T>
 inline T LinkedList<T>::pop_front()
 {
    if (empty())
-      throw std::out_of_range("LIST IS EMPTY!");
+      throw EmptyStructureException();
 
    if (size_ == 1) {
       Node<T>* aux= head;
@@ -215,10 +231,16 @@ inline T LinkedList<T>::pop_front()
 }
 
 template<typename T>
+inline T LinkedList<T>::pop_data(const T & data)
+{
+   return pop(find(data));
+}
+
+template<typename T>
 inline void LinkedList<T>::remove(const T& data)
 {
    if (size_ == 0)
-      throw std::out_of_range("LIST IS EMPTY!");
+      throw EmptyStructureException();
    pop(find(data));
 }
 
@@ -244,12 +266,12 @@ template<typename T>
 inline std::size_t LinkedList<T>::find(const T & data) const
 {
    if (empty())
-      throw std::out_of_range("LIST IS EMPTY!");
+      throw EmptyStructureException();
    Node<T>* aux= head;
    for (int i= 0; i < size_; i++)
       if (aux->data() == data)
          return i;
-   return size_;
+   throw InvalidDataException();
 }
 
 template<typename T>

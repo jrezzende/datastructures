@@ -3,6 +3,7 @@
 #define INCLUDED_LINKEDQUEUE_H
 
 #include "Node.h"
+#include "EmptyStructureException.h"
 
 template<typename T>
 class LinkedQueue
@@ -66,7 +67,7 @@ template<typename T>
 inline T LinkedQueue<T>::dequeue()
 {
    if (empty())
-      throw std::out_of_range("LIST IS EMPTY!");
+      throw EmptyStructureException();
    else if (size_ == 1) {
       T temp= head->data();
       head= nullptr;
@@ -86,7 +87,7 @@ template<typename T>
 inline T &LinkedQueue<T>::front() const
 {
    if (empty())
-      throw std::out_of_range("LIST IS EMPTY!");
+      throw EmptyStructureException();
    return head->data();
 }
 
@@ -94,7 +95,7 @@ template<typename T>
 inline T &LinkedQueue<T>::back() const
 {
    if (empty())
-      throw std::out_of_range("LIST IS EMPTY!");
+      throw EmptyStructureException();
    return tail->data();
 }
 

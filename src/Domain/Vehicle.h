@@ -2,6 +2,8 @@
 #ifndef INCLUDED_VEHICLE_H
 #define INCLUDED_VEHICLE_H
 
+#include "MyRandom.h"
+
 class Vehicle
 {
    int vehicleSize;
@@ -9,7 +11,9 @@ class Vehicle
 
 public:
    ~Vehicle()= default;
-   Vehicle();
+   Vehicle() 
+   { vehicleSize = MyRandom::generate(-1, 5) + 3;
+     laneDecision = MyRandom::generate(1, 100) + 1; }
 
    const int size() { return vehicleSize; }
    const int lane() { return laneDecision; }

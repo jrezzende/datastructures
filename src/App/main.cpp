@@ -6,4 +6,5 @@
 void main()
 {
    App p;
+   Vehicle v;
 }

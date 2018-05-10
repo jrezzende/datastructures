@@ -5,6 +5,10 @@
 #include <cstdint>
 #include <stdexcept>
 #include <algorithm>
+#include "EmptyStructureException.h"
+#include "FullStructureException.h"
+#include "InvalidDataException.h"
+#include "IndexException.h"
 
 template<typename T>
 class ArrayList
@@ -30,6 +34,7 @@ public:
    T pop_back;
    T pop_front();
    T& at(std::size_t index);
+   T pop_data(const T& data);
 
    void remove(const T& data);
 
@@ -73,7 +78,7 @@ template<typename T>
 inline void ArrayList<T>::push_back(const T & data)
 {
    if (full())
-      throw std::out_of_range("LIST IS FULL!");
+      throw FullStructureException();
    contents[size_++]= data;
 }
 
@@ -81,7 +86,7 @@ template<typename T>
 inline void ArrayList<T>::push_front(const T & data)
 {
    if (full())
-      throw std::out_of_range("LIST IS FULL!");
+      throw FullStructureException();
    for (int i= size_; i > 0; i--)
       std::swap(contents[i], contents[i - 1]);
    contents[0]= data;
@@ -92,9 +97,9 @@ template<typename T>
 inline void ArrayList<T>::insert(const T & data, std::size_t index)
 {
    if (full())
-      throw std::out_of_range("LIST IS FULL!");
-   if (index >= size_ || index < 0)
-      throw std::out_of_range("INDEX OUT OF BOUNDS!");
+      throw FullStructureException();
+   if (index >= size_)
+      push_back(data);
    for (int i= size_; i > index; i--;)
       std::swap(contents[i - 1], contents[i]);
    contents[index]= data;
@@ -117,9 +122,9 @@ template<typename T>
 inline T ArrayList<T>::pop()
 {
    if (index < 0 || index >= size_)
-      throw std::out_of_range("INDEX OUT OF BOUNDS!");
+      throw IndexException();
    if (empty())
-      throw std::out_of_range("LIST IS EMPTY!");
+      throw EmptyStructureException();
    auto temp= contents[index];
    for (int i= index; i < size_; i++)
       contents[index]= contents[index + 1];
@@ -131,7 +136,7 @@ template<typename T>
 inline T ArrayList<T>::pop_front()
 {
    if (empty())
-      throw std::out_of_range("LIST IS EMPTY!");
+      throw EmptyStructureException();
    auto temp= contents[0];
    for(int i= 1; i < size_; i++)
       contents[i - 1]= contents[i];
@@ -155,8 +160,14 @@ template<typename T>
 inline T& ArrayList<T>::at(std::size_t index)
 {
    if (index < 0 || index >= size_)
-      throw std::out_of_range("INDEX OUT OF BOUNDS!");
+      throw IndexException();
    return contents[index];
+}
+
+template<typename T>
+inline T ArrayList<T>::pop_data(const T & data)
+{
+   return pop(find(data));
 }
 
 template<typename T>
@@ -175,7 +186,7 @@ template<typename T>
 inline bool ArrayList<T>::contains(const T & data)
 {
    if (empty())
-      throw std::out_of_range("LIST IS EMPTY!");
+      throw EmptyStructureException();
    for (int i = 0; i < size_; i++) {
       if (contents[i] == data)
          return true;
@@ -187,12 +198,12 @@ template<typename T>
 inline std::size_t ArrayList<T>::find(const T & data)
 {
    if (empty())
-      throw std::out_of_range("LIST IS EMPTY!");
+      throw EmptyStructureException();
    for (int i = 0; i < size_; i++) {
       if (contents[i] == data)
          return i;
    }
-   return size_;
+   throw InvalidDataException();
 }
 
 template<typename T>

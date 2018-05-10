@@ -3,6 +3,10 @@
 #define INCLUDED_RINGBUFFER_H
 
 #include "Node.h"
+#include "EmptyStructureException.h"
+#include "InvalidDataException.h"
+#include "IndexException.h"
+#include "FullStructureException.h"
 
 template <typename T>
 class RingBuffer {
@@ -60,8 +64,8 @@ template<typename T>
 inline void RingBuffer<T>::push_front(const T & data)
 {
    Node<T>* new_node= new Node<T>(data, nullptr);
-   if (new_node == nullptr)
-      throw std::out_of_range("LIST IS FULL!");
+   if (!new_node)
+      throw FullStructureException();
    sentinel->setNext(new_node);
    if (!empty()) {
       new_node->setNext(head);
@@ -76,16 +80,18 @@ inline void RingBuffer<T>::push_front(const T & data)
 template<typename T>
 inline void RingBuffer<T>::insert(const T& data, std::size_t index)
 {
-   if (index > size_)
-      throw std::out_of_range("INDEX OUT OF BOUNDS!");
-   if (index == 0)
+   if (index < 0)
+      throw IndexException();
+   else if (index >= size_)
+      return push_back(data);
+   else if (index == 0)
       return push_front(data);
 
    Node<T>* new_node= new Node<T>(data, nullptr);
    Node<T>* prev;
 
-   if (new_node == nullptr)
-      throw std::out_of_range("LIST IS FULL!");
+   if (!new_node)
+      throw FullStructureException();
 
    prev= head;
 
@@ -102,7 +108,7 @@ template<typename T>
 inline T RingBuffer<T>::pop_back()
 {
    if (empty())
-      throw std::out_of_range("LIST IS EMPTY!");
+      throw EmptyStructureException();
    return pop(size_ - 1);
 }
 
@@ -110,7 +116,7 @@ template<typename T>
 inline T RingBuffer<T>::pop_front()
 {
    if (empty())
-      throw std::out_of_range("LIST IS EMPTY!");
+      throw EmptyStructureException();
    Node<T>* tempNode= head;
    T aux= tempNode->data();
 
@@ -125,10 +131,13 @@ inline T RingBuffer<T>::pop_front()
 template<typename T>
 inline T RingBuffer<T>::pop(std::size_t index)
 {
-   if (index >= size_)
-      throw std::out_of_range("INDEX OUT OF BOUNDS!");
-   if (index == 0)
+   if (index < 0)
+      throw IndexException();
+   else if (index >= size_)
+      pop_back();
+   else if (index == 0)
       return pop_front();
+
    Node<T> *prevNode, *tempNode;
    T aux;
 
@@ -150,13 +159,16 @@ template<typename T>
 inline T RingBuffer<T>::pop_data(const T & data)
 {
    if (empty())
-      throw std::out_of_range("LIST IS EMPTY!");
+      throw EmptyStructureException;
    return pop(find(data));
 }
 
 template<typename T>
 inline void RingBuffer<T>::remove_front()
 {
+   if (empty())
+      throw EmptyStructureException();
+
    delete head;
 
    head= head->next();
