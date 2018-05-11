@@ -1,11 +1,12 @@
 #include <vector>
+#include <cstdlib>
 #include "Semaphore.h"
 
 Semaphore::Semaphore(bool _isOpen, Lane* _lanes[], int * _odds, int _gapTime) : 
 isOpen(_isOpen), odds(_odds), gapTime(_gapTime), remTimeToOpen(0), currentLane_(_lanes[0])
 {
-   lanes= new ArrayList<Lane*>(3);
-
+   lanes= new ArrayList<Lane*>(std::size_t(3));
+   
    for (int i= 0; i < 3; i++)
       lanes->push_back(_lanes[i]);
 

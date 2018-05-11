@@ -1,19 +1,22 @@
 #include "App.h"
 
-App::App() : actualTime(0)
+App::App() : actualTime(0), vehiclesThroughSemaphores(0), vehiclesCreatedInSystem(0)
 {
+   callAsciiArt();
+
    std::cout << "Enter an integer number for the semaphore delay." << std::endl;
    std::cin >> semaphoreDelay;
 
    std::cout << "Enter another integer number for the total execution time of the system." << std::endl;
    std::cin >> executionTime;
 
-   this->semaphores= new RingBuffer<Semaphore*>();
-   this->lanes= new RingBuffer<Lane*>();
+   this->semaphores= new RingList<Semaphore*>();
+   this->lanes= new RingList<Lane*>();
    eventList= new EventList();
    
    initializeComponents();
-   callAsciiArt();
+   
+   launch();
 }
 
 void App::callAsciiArt()
@@ -78,7 +81,7 @@ void App::initializeComponents()
 
    Lane* laneO1East[4] = { O1EAST, C1EAST, N1NORTH, S1SOUTH };
    int oddsLaneO1East[3] = { 80, 10, 10 };
-   Semaphore* semaphore01East = new Semaphore(false, static_cast<Lane**>(laneO1East),
+   Semaphore* semaphore01East = new Semaphore(true, static_cast<Lane**>(laneO1East),
       static_cast<int*>(oddsLaneO1East), semaphoreDelay);
 
    Lane* laneN1South[4] = { N1SOUTH, C1EAST, O1WEST, S1SOUTH };
@@ -293,7 +296,7 @@ void App::runEvents()
       }
       eventList->pop_data(currentEvent);
    }
-   end();
+   report();
 }
 
 void App::countVehicles()
@@ -301,18 +304,19 @@ void App::countVehicles()
    for (int i = 0; i < lanes->size(); i++) {
       Lane* currentLane = lanes->at(i);
       if (currentLane->isSource())
-         vehiclesThroughSystem = vehiclesThroughSystem + currentLane->vehiclesThrough();
+         vehiclesCreatedInSystem = vehiclesCreatedInSystem + currentLane->vehiclesThrough();
       else
          if (currentLane->isSink()) {
-            vehiclesThroughSemaphores= vehiclesThroughSemaphores + currentLane->vehiclesRanThrough();
+            vehiclesThroughSemaphores= vehiclesThroughSemaphores + currentLane->vehiclesCreated();
          }
    }
 }
 
-void App::end()
+void App::report()
 {
    countVehicles();
 
-   std::cout << "Vehicles that joined the system: " << vehiclesThroughSystem << std::endl;
+   std::cout << "Vehicles created in the system: " << vehiclesCreatedInSystem << std::endl;
    std::cout << "Vehicles that went through semaphores: " << vehiclesThroughSemaphores << std::endl;
+   std::cout << std::endl;
 }

@@ -3,20 +3,18 @@
 #define INCLUDED_LINKEDQUEUE_H
 
 #include "Node.h"
+#include "LinkedList.h"
 #include "EmptyStructureException.h"
 
 template<typename T>
-class LinkedQueue
+class LinkedQueue : LinkedList<T> 
 {
-   Node<T>* head;
    Node<T>* tail;
-   std::size_t size_;
 
 public:
-   ~LinkedQueue();
-   LinkedQueue();
-   
-   void clear();
+   ~LinkedQueue()= default;
+   LinkedQueue() : LinkedList<T>(), tail(nullptr) {}
+
    void enqueue(T& data);
 
    T dequeue();
@@ -29,38 +27,19 @@ public:
 };
 
 template<typename T>
-inline LinkedQueue<T>::~LinkedQueue()
-{
-   clear();
-}
-
-template<typename T>
-inline LinkedQueue<T>::LinkedQueue()
-{
-   head= tail= nullptr;
-   size_= 0;
-}
-
-template<typename T>
-inline void LinkedQueue<T>::clear()
-{
-   while(size_)
-      dequeue();
-}
-
-template<typename T>
 inline void LinkedQueue<T>::enqueue(T& data)
 {
-   if (empty()) {
-      head= new Node<T>(data);
-      tail= head;
-   } 
-   else {
-      auto new_node= new Node<T>(data);
+   Node<T>* new_node= new Node<T>(data, nullptr);
+   if (!new_node)
+      throw FullStructureException();
+
+   if (empty())
+      this->head= new_node;
+   else
       tail->setNext(new_node);
-      tail= new_node;
-   }
-   size_++;
+   tail->setNext(nullptr); // (0)
+   tail= new_node;
+   this->size_++;
 }
 
 template<typename T>
@@ -68,18 +47,17 @@ inline T LinkedQueue<T>::dequeue()
 {
    if (empty())
       throw EmptyStructureException();
-   else if (size_ == 1) {
-      T temp= head->data();
-      head= nullptr;
+ 
+   Node<T>* toBePopped= this->head;
+   T temp= toBePopped->data();
+   this->head= toBePopped->next();
+
+   if (this->size_ == 1)
       tail= nullptr;
-      size_--;
-      return temp;
-   }
-   Node<T>* current= head;
-   T temp= current->data();
-   head= current->next();
-   delete current;
-   size_--;
+
+   this->size_--;
+
+   delete toBePopped;
    return temp;
 }
 

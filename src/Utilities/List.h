@@ -14,15 +14,12 @@ template<typename T>
 class ArrayList
 {
    T* contents;
+   std::size_t last;
    std::size_t size_;
-   std::size_t max_size_;
-
-   static const auto DEFAULT_MAX= 10u;
 
 public:
-   ~ArrayList();
-   ArrayList();
-   explicit ArrayList(std::size_t max_size);
+   ~ArrayList()= default;
+   explicit ArrayList(std::size_t max_size) : contents(new T[max_size]), last(0), size_(max_size) {}
 
    void clear();
    void push_back(const T& data);
@@ -31,7 +28,7 @@ public:
    void insert_sorted(const T& data);
 
    T pop(std::size_t index);
-   T pop_back;
+   T pop_back();
    T pop_front();
    T& at(std::size_t index);
    T pop_data(const T& data);
@@ -48,49 +45,21 @@ public:
 };
 
 template<typename T>
-inline ArrayList<T>::~ArrayList()
-{
-   delete[] contents;
-}
-
-template<typename T>
-inline ArrayList<T>::ArrayList()
-{
-   size_= max_size_= 0;
-   contents= new T[max_size_];
-}
-
-template<typename T>
-inline ArrayList<T>::ArrayList(std::size_t max_size)
-{
-   max_size_= max_size;
-   size_= 0;
-   contents= new T[max_size_];
-}
-
-template<typename T>
 inline void ArrayList<T>::clear()
 {
-   size_= 0;
+   last= 0;
 }
 
 template<typename T>
 inline void ArrayList<T>::push_back(const T & data)
 {
-   if (full())
-      throw FullStructureException();
-   contents[size_++]= data;
+   return insert(data, last + 1);
 }
 
 template<typename T>
 inline void ArrayList<T>::push_front(const T & data)
 {
-   if (full())
-      throw FullStructureException();
-   for (int i= size_; i > 0; i--)
-      std::swap(contents[i], contents[i - 1]);
-   contents[0]= data;
-   size_++;
+   return insert(data, 0);
 }
 
 template<typename T>
@@ -98,50 +67,58 @@ inline void ArrayList<T>::insert(const T & data, std::size_t index)
 {
    if (full())
       throw FullStructureException();
-   if (index >= size_)
-      push_back(data);
-   for (int i= size_; i > index; i--;)
+   if (index < 0 ||index > size_)
+      throw IndexException();
+
+   if (empty()) {
+      last++;
+      contents[0]= data;
+      return;
+   }
+
+   for (int i= last; i > index; i--)
       std::swap(contents[i - 1], contents[i]);
    contents[index]= data;
-   size_++;
+   last++;
 }
 
 template<typename T>
 inline void ArrayList<T>::insert_sorted(const T & data)
 {
-   contents[size_++]= data;
-   for (int i= 0; i < size_; i++) {
-      for (int j = 0; j < size_; j++) {
-         if (contents[i] < contents[j])
-            std::swap(contents[i], contents[j]);
-      }
+   if (full())
+      throw FullStructureException();
+   int index= 0;
+   while ((index <= last) && (data > contents[index])) {
+      index++;
    }
+   insert(data, index);
 }
 
 template<typename T>
 inline T ArrayList<T>::pop(std::size_t index)
 {
-   if (index < 0 || index >= size_)
+   if (index < 0 || index > last)
       throw IndexException();
    if (empty())
       throw EmptyStructureException();
-   auto temp = contents[index];
-   for (int i = index; i < size_; i++)
+
+   last--;
+   T temp = contents[index];
+   for (int i = index; i <= last; i++)
       contents[index] = contents[index + 1];
-   size_--;
    return temp;
 }
 
 template<typename T>
 inline T ArrayList<T>::pop_front()
 {
-   if (empty())
-      throw EmptyStructureException();
-   auto temp= contents[0];
-   for(int i= 1; i < size_; i++)
-      contents[i - 1]= contents[i];
-   size_--;
-   return temp;
+   return pop(0);
+}
+
+template<typename T>
+inline T ArrayList<T>::pop_back()
+{
+   return pop(last);
 }
 
 template<typename T>
@@ -150,16 +127,16 @@ inline void ArrayList<T>::remove(const T & data)
    int index= find(data);
    if (index > -1) {
       contents[index]= -1;
-      for (int i= index; i < size_; i++)
+      for (int i= index; i < last; i++)
          contents[i - 1]= 1;
-   size_--;
+   last--;
    }
 }
 
 template<typename T>
 inline T& ArrayList<T>::at(std::size_t index)
 {
-   if (index < 0 || index >= size_)
+   if (index < 0 || index >= last)
       throw IndexException();
    return contents[index];
 }
@@ -176,13 +153,13 @@ inline T ArrayList<T>::pop_data(const T& data)
 template<typename T>
 inline bool ArrayList<T>::full()
 {
-   return size_ == max_size_;
+   return last == size_;
 }
 
 template<typename T>
 inline bool ArrayList<T>::empty()
 {
-   return size_ == 0;
+   return last == 0;
 }
 
 template<typename T>
@@ -190,7 +167,7 @@ inline bool ArrayList<T>::contains(const T & data)
 {
    if (empty())
       throw EmptyStructureException();
-   for (int i = 0; i < size_; i++) {
+   for (int i = 0; i < last; i++) {
       if (contents[i] == data)
          return true;
    }
@@ -202,7 +179,7 @@ inline std::size_t ArrayList<T>::find(const T & data)
 {
    if (empty())
       throw EmptyStructureException();
-   for (int i = 0; i < size_; i++) {
+   for (int i = 0; i < last; i++) {
       if (contents[i] == data)
          return i;
    }
@@ -212,13 +189,13 @@ inline std::size_t ArrayList<T>::find(const T & data)
 template<typename T>
 inline std::size_t ArrayList<T>::size()
 {
-   return size_;
+   return last;
 }
 
 template<typename T>
 inline std::size_t ArrayList<T>::max_size()
 {
-   return max_size_;
+   return size_;
 }
 
 #endif // INCLUDED_ARRAYLIST_H

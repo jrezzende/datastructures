@@ -2,87 +2,77 @@
 #ifndef INCLUDED_RINGBUFFER_H
 #define INCLUDED_RINGBUFFER_H
 
-#include "Node.h"
-#include "EmptyStructureException.h"
-#include "InvalidDataException.h"
-#include "IndexException.h"
-#include "FullStructureException.h"
+#include "LinkedList.h"
 
 template <typename T>
-class RingBuffer {
-
+class RingList : public LinkedList<T> {
    Node<T>* head;
    std::size_t size_;
 
 public:
-   virtual ~RingBuffer()= default;
-   RingBuffer();
-
+   virtual ~RingList()= default;
+   RingList() : LinkedList<T>() {
+      Node<T>* sentinel= new Node<T>(nullptr, nullptr);
+      this->head= sentinel;
+      sentinel->setNext(this->head);
+      size_= 0;
+   }
    void push(const T& data);
-
-   std::size_t find(const T& data) const;
-   std::size_t size() const { return this->size_; }
+   void insert(const T& data, std::size_t index);
+   void push_front(const T& data);
    T at(std::size_t index);
 
-   bool empty() const;
 };
 
 template<typename T>
-inline RingBuffer<T>::RingBuffer()
+inline void RingList<T>::push(const T& data)
 {
-   size_= 0;
-   head= nullptr;
+   return insert(data, size_);
 }
 
 template<typename T>
-inline void RingBuffer<T>::push(const T& data)
+inline void RingList<T>::insert(const T& data, std::size_t index)
 {
-   if (empty())
-      head = new Node<T>(data);
-   else if (size_ == 1) {
-      Node<T>* node = new Node<T>(data, head, head);
-      head->setNext(node);
-      head->setPrev(node);
-   }
-   else {
-      Node<T>* node = new Node<T>(data, head->prev(), head);
-      head->prev()->setNext(node);
-      head->setPrev(node);
-   }
-   size_++;
+   if (index < 0 || index > this->size_)
+      throw FullStructureException();
+   if (index == 0)
+      return push_front(data);
+
+   Node<T>* prev= head->next();
+   Node<T>* new_node= new Node<T>(data, nullptr);
+
+   if (!new_node)
+      throw FullStructureException();
+
+   for (int i= 1; i < index; i++)
+      prev= prev->next();
+
+   new_node->setNext(prev->next());
+   prev->setNext(new_node);
+   this->size_++;
 }
 
 template<typename T>
-inline std::size_t RingBuffer<T>::find(const T & data) const
+inline void RingList<T>::push_front(const T & data)
 {
-   Node<T>* current= head;
-   
-   for (int i= 0; i < size_; i++) {
-      if (current->data() == data)
-         return i;
-      current= current->next();
-   }
-   return size_;
+   Node<T>* new_node= new Node<T>(data, nullptr);
+   if (!new_node)
+      throw FullStructureException();
+   new_node->setNext(this->head->next());
+   this->head->setNext(new_node);
+   this->size_++;
 }
 
 template<typename T>
-inline T RingBuffer<T>::at(std::size_t index)
+inline T RingList<T>::at(std::size_t index)
 {
-   if (index >= size_ || index < 0)
-      throw IndexException();
+   if (size_ == 0)
+      throw EmptyStructureException();
 
-   Node<T>* current= head;
-
+   Node<T>* current= this->head->next();
    for (int i= 0; i < index; i++)
       current= current->next();
-
    return current->data();
-}
-
-template<typename T>
-inline bool RingBuffer<T>::empty() const
-{
-   return size_ == 0;
 }
 
 #endif // INCLUDED_RINGBUFFER_H

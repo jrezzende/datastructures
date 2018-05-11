@@ -1,7 +1,7 @@
 #include "Lane.h"
 
 Lane::Lane(int size, int avgSpeed, int creationGap, int creationTime) :
-totalSize(size), actualSize(0), vehiclesWentThrough(0), vehiclesJoined(0),
+totalSize(size), actualSize(0), vehiclesWentThrough(0), vehiclesCreatedInSystem(0),
 averageSpeed(avgSpeed)
 {
    arrivalTime= totalSize / avgSpeed;
@@ -32,5 +32,5 @@ void Lane::newVehicle(Vehicle* v)
 
    this->enqueue(v);
    actualSize= newSize;
-   vehiclesJoined++;
+   vehiclesCreatedInSystem++;
 }

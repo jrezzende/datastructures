@@ -11,30 +11,25 @@
 template <typename T>
 class LinkedList
 {
+protected:
    Node<T>* head;
    std::size_t size_;
 
-   Node<T>* end() {
-      auto it= head;
-      for (auto i= 1; i < size(); ++i)
-         it= it->next();
-      return it;
-   }
-
 public:
-   ~LinkedList();
-   LinkedList();
+   ~LinkedList()= default;
+   LinkedList() : head(nullptr), size_(0) {}
 
    void clear();
    void push_back(const T& data);
    void push_front(const T& data);
+
    void insert(const T& data, std::size_t index);
    void insert_sorted(const T& data);
 
    T at(std::size_t index);
    T pop(std::size_t index);
-   T pop_back();
    T pop_front();
+   T pop_back();
    T pop_data(const T& data);
 
    void remove(const T& data);
@@ -46,72 +41,44 @@ public:
 };
 
 template<typename T>
-inline LinkedList<T>::~LinkedList()
-{
-   clear();
-}
-
-template<typename T>
-inline LinkedList<T>::LinkedList()
-{
-   size_= 0;
-   head= nullptr;
-}
-
-template<typename T>
 inline void LinkedList<T>::clear()
 {
-   Node<T>* current= head;
-   Node<T>* next_node;
-   while (current != nullptr) {
-      next_node= current->next();
+   Node<T>* current;
+   for (int i = 0; i < size_; i++) {
+      current= head;
+      head= head->next();
       delete current;
-      current= next_node;
    }
-   head= nullptr;
    size_= 0;
 }
 
 template<typename T>
-inline void LinkedList<T>::push_back(const T & data)
+inline void LinkedList<T>::push_back(const T& data)
 {
-   Node<T>* new_node= new Node<T>(data);
-   if (!new_node)
-      throw FullStructureException();
-   if (empty())
-      head= new_node;
-   else
-      end()->setNext(new_node);
-   size_++;
+   return insert(data, size_)
 }
 
 template<typename T>
 inline void LinkedList<T>::push_front(const T & data)
 {
-   Node<T>* new_node= new Node<T>(data);
+   Node<T>* new_node= new Node<T>(data, nullptr);
    if (!new_node)
       throw FullStructureException();
-   if (empty())
-      head= new_node;
-   else {
-      new_node->setNext(head);
-      head= new_node;
-   }
+   new_node->setNext(head);
+   head= new_node;
    size_++;
 }
 
 template<typename T>
 inline void LinkedList<T>::insert(const T & data, std::size_t index)
 {
-   Node<T>* new_node= new Node<T>(data);
+   Node<T>* new_node= new Node<T>(data, nullptr);
    if(!new_node)
       throw FullStructureException();
-   else if (empty())
+   else if (empty() || index == 0)
       head = new_node;
 
-   if (index >= size_ )
-      push_back(data);
-   else if (index < 0)
+   if (index < 0 || index > size_)
       throw IndexException();
 
    else {
@@ -131,7 +98,7 @@ inline void LinkedList<T>::insert_sorted(const T & data)
       push_front(data);
    else {
       Node<T>* aux= head;
-      int pos= 1;
+      int pos= 0;
       while (aux->next() != nullptr && data > aux->data()) {
          aux= aux->next();
          pos++;
@@ -159,9 +126,7 @@ inline T LinkedList<T>::at(std::size_t index)
 template<typename T>
 inline T LinkedList<T>::pop(std::size_t index)
 {
-   if (index >= size_)
-      pop_back();
-   if (index < 0)
+   if (index < 0 || index > size_)
       throw IndexException();
    if (index == 0)
       return pop_front();
@@ -179,55 +144,15 @@ inline T LinkedList<T>::pop(std::size_t index)
 }
 
 template<typename T>
-inline T LinkedList<T>::pop_back()
+inline T LinkedList<T>::pop_front()
 {
-   if (empty())
-      throw EmptyStructureException();
-   Node<T>* tobePopped = end();
-
-   if (size_ == 1) {
-      Node<T>* aux= head;
-      T temp= aux->data();
-
-      delete tobePopped;
-      head= nullptr;
-
-      size_--;
-      return temp;
-   }
-
-   T temp= tobePopped->data();
-
-   size_--;
-
-   delete tobePopped;
-   return temp;
+   return pop(0);
 }
 
 template<typename T>
-inline T LinkedList<T>::pop_front()
+inline T LinkedList<T>::pop_back()
 {
-   if (empty())
-      throw EmptyStructureException();
-
-   if (size_ == 1) {
-      Node<T>* aux= head;
-      T temp= aux->data();
-
-      delete aux;
-      head= nullptr;
-
-      size_--;
-      return temp;
-   }
-
-   Node<T>* toBePopped= head;
-   T temp= toBePopped->data();
-   head= toBePopped->next();
-
-   size_--;
-   delete toBePopped;
-   return temp;
+   return pop(size_);
 }
 
 template<typename T>

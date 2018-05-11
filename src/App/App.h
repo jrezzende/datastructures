@@ -10,8 +10,8 @@
 
 class App
 {
-   RingBuffer<Semaphore*>* semaphores;
-   RingBuffer<Lane*>* lanes;
+   RingList<Semaphore*>* semaphores;
+   RingList<Lane*>* lanes;
 
    EventList* eventList;
 
@@ -20,7 +20,7 @@ class App
    int semaphoreDelay;
    int executionTime;
    int vehiclesThroughSemaphores;
-   int vehiclesThroughSystem;
+   int vehiclesCreatedInSystem;
 
 public:
   ~App()= default;
@@ -39,7 +39,7 @@ public:
 
   void runEvents();
   void countVehicles();
-  void end();
+  void report();
 };
 
 #endif // INCLUDED_APP_H

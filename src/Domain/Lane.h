@@ -14,7 +14,7 @@ class Lane : public LinkedQueue<Vehicle*>
    int actualSize;
 
    int vehiclesWentThrough;
-   int vehiclesJoined;
+   int vehiclesCreatedInSystem;
 
    int averageSpeed;
    int arrivalTime;
@@ -39,7 +39,7 @@ public:
 
    const int laneSize() { return this->totalSize; }
    const int vehiclesThrough() { return this->vehiclesWentThrough; }
-   const int vehiclesRanThrough() { return this->vehiclesJoined; }
+   const int vehiclesCreated() { return this->vehiclesCreatedInSystem; }
 };
 
 #endif // !INCLUDED_LANE_H
