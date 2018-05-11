@@ -11,9 +11,7 @@ class Vehicle
 
 public:
    ~Vehicle()= default;
-   Vehicle() 
-   { vehicleSize = MyRandom::generate(-1, 5) + 3;
-     laneDecision = MyRandom::generate(1, 100) + 1; }
+   Vehicle() { vehicleSize = MyRandom::generate(2, 8) + 3; laneDecision = MyRandom::generate(1, 100) + 1; }
 
    const int size() { return vehicleSize; }
    const int lane() { return laneDecision; }

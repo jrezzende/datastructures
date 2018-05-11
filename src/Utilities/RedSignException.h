@@ -8,8 +8,8 @@
 class RedSignException : public std::exception
 {
 public:
-   virtual std::string* except() const throw() {
-      return &std::string("The current semaphore is closed.");
+   virtual std::string& except() const throw() {
+      return *new std::string("The current semaphore is closed.");
    }
 };
 

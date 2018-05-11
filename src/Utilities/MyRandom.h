@@ -6,7 +6,7 @@
 
 namespace MyRandom
 {
-   int generate(int outset, int end)
+   inline int generate(int outset, int end)
    {
       std::random_device rd;
       std::mt19937 eng(rd());

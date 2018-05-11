@@ -17,7 +17,7 @@ public:
    LinkedQueue();
    
    void clear();
-   void enqueue(const T& data);
+   void enqueue(T& data);
 
    T dequeue();
    T& front() const;
@@ -49,14 +49,14 @@ inline void LinkedQueue<T>::clear()
 }
 
 template<typename T>
-inline void LinkedQueue<T>::enqueue(const T & data)
+inline void LinkedQueue<T>::enqueue(T& data)
 {
    if (empty()) {
       head= new Node<T>(data);
       tail= head;
    } 
    else {
-      auto new_node= new Node(data);
+      auto new_node= new Node<T>(data);
       tail->setNext(new_node);
       tail= new_node;
    }

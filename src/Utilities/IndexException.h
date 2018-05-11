@@ -8,8 +8,8 @@
 class IndexException : public std::exception
 {
 public:
-   virtual std::string* except() const throw() {
-      return &std::string("Index out of bounds.");
+   virtual std::string& except() const throw() {
+      return *new std::string("Index out of bounds.");
    }
 };
 

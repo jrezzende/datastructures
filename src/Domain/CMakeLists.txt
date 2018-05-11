@@ -6,6 +6,7 @@ set(DOMAIN_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(
 	DOMAIN_SRCS
 	Lane.cpp
+	Semaphore.cpp
 )
 
 set(
@@ -13,6 +14,7 @@ set(
 	Vehicle.h
 	Lane.h
 	Semaphore.h
+	Event.h
 )
 
 add_library(domain STATIC ${DOMAIN_SRCS} ${DOMAIN_HEADERS})

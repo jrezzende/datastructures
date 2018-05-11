@@ -34,7 +34,7 @@ public:
    T pop_back;
    T pop_front();
    T& at(std::size_t index);
-   T pop_data(const T& data);
+   T pop_data(std::size_t index);
 
    void remove(const T& data);
 
@@ -165,9 +165,9 @@ inline T& ArrayList<T>::at(std::size_t index)
 }
 
 template<typename T>
-inline T ArrayList<T>::pop_data(const T & data)
+inline T ArrayList<T>::pop_data(std::size_t index)
 {
-   return pop(find(data));
+   return pop(at(index));
 }
 
 template<typename T>

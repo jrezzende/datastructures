@@ -8,8 +8,8 @@
 class FullStructureException : public std::exception
 {
 public:
-   virtual std::string* except() const throw() {
-      return &std::string("Your structure is full.");
+   virtual std::string& except() const throw() {
+      return *new std::string("Your structure is full.");
    }
 };
 

@@ -14,7 +14,7 @@ class Lane : public LinkedQueue<Vehicle*>
    int actualSize;
 
    int vehiclesWentThrough;
-   int vehiclesRunIn;
+   int vehiclesJoined;
 
    int averageSpeed;
    int arrivalTime;
@@ -27,9 +27,9 @@ public:
    Lane(int size, int avgspeed, int creationgap, int creationtime);
 
    void newVehicle(Vehicle* v);
-   void eraseCar();
+   void eraseCar() { this->dequeue(); vehiclesWentThrough++; }
 
-   int nextEvent(int actualTime);
+   int nextEvent(int actualTime) { return (negCreationTime + (MyRandom::generate(1, 100) % posCreationTime - 2 + 1)) + actualTime; }
    int carArrival(int carCreation) { return carCreation + arrivalTime; }
 
    bool laneFull() { return actualSize >= totalSize; }
@@ -39,7 +39,7 @@ public:
 
    const int laneSize() { return this->totalSize; }
    const int vehiclesThrough() { return this->vehiclesWentThrough; }
-   const int vehiclesRanThrough() { return this->vehiclesRanThrough; }
+   const int vehiclesRanThrough() { return this->vehiclesJoined; }
 };
 
 #endif // !INCLUDED_LANE_H

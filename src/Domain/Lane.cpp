@@ -1,38 +1,36 @@
 #include "Lane.h"
 
-Lane::Lane(int size, int avgspeed, int creationgap, int creationtime)
+Lane::Lane(int size, int avgSpeed, int creationGap, int creationTime) :
+totalSize(size), actualSize(0), vehiclesWentThrough(0), vehiclesJoined(0),
+averageSpeed(avgSpeed)
 {
+   arrivalTime= totalSize / avgSpeed;
+   posCreationTime= creationTime + creationGap;
+   negCreationTime= creationTime - creationGap;
+
+   if (creationGap == 0) {
+      if (creationTime == 0) {
+         sourceLane = false;
+         sinkLane = true;
+      }
+      else if (creationTime == 1) {
+         sourceLane = false;
+         sinkLane = false;
+      }
+   }
+   else {
+      sourceLane= true;
+      sinkLane= false;
+   }
 }
 
-void Lane::newVehicle(Vehicle * v)
+void Lane::newVehicle(Vehicle* v)
 {
-}
+   auto newSize= actualSize + v->size();
+   if (newSize > totalSize)
+      return;
 
-void Lane::eraseCar()
-{
-}
-
-int Lane::nextEvent(int actualTime)
-{
-   return 0;
-}
-
-int Lane::carArrival(int carCreation)
-{
-   return 0;
-}
-
-bool Lane::laneFull()
-{
-   return false;
-}
-
-bool Lane::isSource()
-{
-   return false;
-}
-
-bool Lane::isSink()
-{
-   return false;
+   this->enqueue(v);
+   actualSize= newSize;
+   vehiclesJoined++;
 }

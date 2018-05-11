@@ -8,8 +8,8 @@
 class InvalidDataException : public std::exception
 {
 public:
-   virtual std::string* except() const throw() {
-      return &std::string("Your structure does not contain such data.");
+   virtual std::string& except() const throw() {
+      return *new std::string("Your structure does not contain such data.");
    }
 };
 

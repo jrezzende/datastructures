@@ -11,16 +11,16 @@ class Node
 
 public:
    ~Node();
-   Node(const T& data);
-   Node(const T& data, Node<T>* nextNode);
-   Node(const T& data, Node<T>* nextNode, Node<T>* prevNode);
+   Node(T& data);
+   Node(T& data, Node<T>* nextNode);
+   Node(T& data, Node<T>* nextNode, Node<T>* prevNode);
 
-   next();
-   prev();
-   data();
+   Node<T>* next();
+   Node<T>* prev();
+   T data();
 
-   setNext(Node<T>* nextNode);
-   setPrev(Node<T>* prevNode);
+   void setNext(Node<T>* nextNode);
+   void setPrev(Node<T>* prevNode);
 };
 
 template<typename T>
@@ -30,48 +30,48 @@ inline Node<T>::~Node()
 }
 
 template<typename T>
-inline Node<T>::Node(const T & data) : data_(data), next_(nullptr), prev_(nullptr)
+inline Node<T>::Node(T& data) : data_(new T(data)), next_(nullptr), prev_(nullptr)
 {
 }
 
 template<typename T>
-inline Node<T>::Node(const T& data, Node<T>* nextNode) : 
+inline Node<T>::Node(T& data, Node<T>* nextNode) : 
 data_(new T(data)), next_(nextNode), prev_(nullptr)
 {
 }
 
 template<typename T>
-inline Node<T>::Node(const T & data, Node<T>* nextNode, Node<T>* prevNode) :
+inline Node<T>::Node(T& data, Node<T>* nextNode, Node<T>* prevNode) :
 data_(new T(data), next_(nextNode), prev_(prevNode))
 {
 }
 
 template<typename T>
-inline Node<T>::next()
+inline Node<T>* Node<T>::next()
 {
    return this->next_;
 }
 
 template<typename T>
-inline Node<T>::prev()
+inline Node<T>* Node<T>::prev()
 {
    return this->prev_;
 }
 
 template<typename T>
-inline Node<T>::data()
+inline T Node<T>::data()
 {
-   return this->data_;
+   return *data_;
 }
 
 template<typename T>
-inline Node<T>::setNext(Node<T>* nextNode)
+inline void Node<T>::setNext(Node<T>* nextNode)
 {
    next_= nextNode;
 }
 
 template<typename T>
-inline Node<T>::setPrev(Node<T>* prevNode)
+inline void Node<T>::setPrev(Node<T>* prevNode)
 {
    prev_= prevNode;
 }
