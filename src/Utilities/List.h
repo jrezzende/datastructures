@@ -30,11 +30,11 @@ public:
    void insert(const T& data, std::size_t index);
    void insert_sorted(const T& data);
 
-   T pop();
+   T pop(std::size_t index);
    T pop_back;
    T pop_front();
    T& at(std::size_t index);
-   T pop_data(std::size_t index);
+   T pop_data(const T& data);
 
    void remove(const T& data);
 
@@ -64,7 +64,7 @@ template<typename T>
 inline ArrayList<T>::ArrayList(std::size_t max_size)
 {
    max_size_= max_size;
-   size= 0;
+   size_= 0;
    contents= new T[max_size_];
 }
 
@@ -119,15 +119,15 @@ inline void ArrayList<T>::insert_sorted(const T & data)
 }
 
 template<typename T>
-inline T ArrayList<T>::pop()
+inline T ArrayList<T>::pop(std::size_t index)
 {
    if (index < 0 || index >= size_)
       throw IndexException();
    if (empty())
       throw EmptyStructureException();
-   auto temp= contents[index];
-   for (int i= index; i < size_; i++)
-      contents[index]= contents[index + 1];
+   auto temp = contents[index];
+   for (int i = index; i < size_; i++)
+      contents[index] = contents[index + 1];
    size_--;
    return temp;
 }
@@ -165,9 +165,12 @@ inline T& ArrayList<T>::at(std::size_t index)
 }
 
 template<typename T>
-inline T ArrayList<T>::pop_data(std::size_t index)
+inline T ArrayList<T>::pop_data(const T& data)
 {
-   return pop(at(index));
+   if (empty())
+      throw EmptyStructureException();
+
+   return pop(find(data));
 }
 
 template<typename T>

@@ -23,7 +23,7 @@ public:
 
 class EventList : public LinkedList<Event*> {
 public:
-   bool greater(Event* data1, Event* data2) const { data1->time() > data2->time(); }
+   bool greater(Event* data1, Event* data2) const { return (data1->time() > data2->time()); }
 };
 
 #endif // !INCLUDED_EVENT_H

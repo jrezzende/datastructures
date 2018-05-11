@@ -11,12 +11,13 @@ class Node
 
 public:
    ~Node();
-   Node(T& data);
+   Node(T& data) : data_(&data), next_(nullptr), prev_(nullptr) {}
    Node(T& data, Node<T>* nextNode);
    Node(T& data, Node<T>* nextNode, Node<T>* prevNode);
 
    Node<T>* next();
    Node<T>* prev();
+
    T data();
 
    void setNext(Node<T>* nextNode);
@@ -30,19 +31,14 @@ inline Node<T>::~Node()
 }
 
 template<typename T>
-inline Node<T>::Node(T& data) : data_(new T(data)), next_(nullptr), prev_(nullptr)
-{
-}
-
-template<typename T>
-inline Node<T>::Node(T& data, Node<T>* nextNode) : 
-data_(new T(data)), next_(nextNode), prev_(nullptr)
+inline Node<T>::Node(T& data, Node<T>* nextNode) :
+data_(new T(&data)), next_(nextNode)
 {
 }
 
 template<typename T>
 inline Node<T>::Node(T& data, Node<T>* nextNode, Node<T>* prevNode) :
-data_(new T(data), next_(nextNode), prev_(prevNode))
+data_(new T(&data)), next_(nextNode), prev_(prevNode)
 {
 }
 

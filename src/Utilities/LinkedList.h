@@ -31,7 +31,7 @@ public:
    void insert(const T& data, std::size_t index);
    void insert_sorted(const T& data);
 
-   T& at(std::size_t index);
+   T at(std::size_t index);
    T pop(std::size_t index);
    T pop_back();
    T pop_front();
@@ -76,8 +76,8 @@ template<typename T>
 inline void LinkedList<T>::push_back(const T & data)
 {
    Node<T>* new_node= new Node<T>(data);
-   if (new_node == nullptr)
-      throw std::out_of_range();
+   if (!new_node)
+      throw FullStructureException();
    if (empty())
       head= new_node;
    else
@@ -90,7 +90,7 @@ inline void LinkedList<T>::push_front(const T & data)
 {
    Node<T>* new_node= new Node<T>(data);
    if (!new_node)
-      throw FullStructureException;
+      throw FullStructureException();
    if (empty())
       head= new_node;
    else {
@@ -144,7 +144,7 @@ inline void LinkedList<T>::insert_sorted(const T & data)
 }
 
 template<typename T>
-inline T& LinkedList<T>::at(std::size_t index)
+inline T LinkedList<T>::at(std::size_t index)
 {
    if (empty())
       throw EmptyStructureException();
@@ -183,19 +183,19 @@ inline T LinkedList<T>::pop_back()
 {
    if (empty())
       throw EmptyStructureException();
+   Node<T>* tobePopped = end();
 
    if (size_ == 1) {
       Node<T>* aux= head;
       T temp= aux->data();
 
-      delete tobePopped
+      delete tobePopped;
       head= nullptr;
 
       size_--;
       return temp;
    }
 
-   Node<T>* tobePopped= end();
    T temp= tobePopped->data();
 
    size_--;

@@ -15,7 +15,7 @@ Lane* Semaphore::laneAvailable()
 {
    Vehicle* vehicle= currentLane_->front();
    int laneChoice= calcOdd(vehicle);
-   Lane* nextLane= lanes->pop_data(laneChoice);
+   Lane* nextLane= lanes->at(laneChoice);
    if (!isOpen)
       throw RedSignException();
    if (!nextLane->laneFull(vehicle)) {

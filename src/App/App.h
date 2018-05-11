@@ -24,7 +24,7 @@ class App
 
 public:
   ~App()= default;
-  App(int _semaphoreDelay, int execTime);
+  App();
 
   void callAsciiArt();
   void initializeComponents();

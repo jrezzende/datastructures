@@ -20,8 +20,8 @@ public:
    void enqueue(T& data);
 
    T dequeue();
-   T& front() const;
-   T& back() const;
+   T front();
+   T back();
 
    bool empty();
 
@@ -84,7 +84,7 @@ inline T LinkedQueue<T>::dequeue()
 }
 
 template<typename T>
-inline T &LinkedQueue<T>::front() const
+inline T LinkedQueue<T>::front()
 {
    if (empty())
       throw EmptyStructureException();
@@ -92,7 +92,7 @@ inline T &LinkedQueue<T>::front() const
 }
 
 template<typename T>
-inline T &LinkedQueue<T>::back() const
+inline T LinkedQueue<T>::back()
 {
    if (empty())
       throw EmptyStructureException();

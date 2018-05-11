@@ -6,7 +6,5 @@
 
 void main()
 {
-   App p;
-   Vehicle v;
-   Lane l(500, 80, 5, 5);
+   App app;
 }
