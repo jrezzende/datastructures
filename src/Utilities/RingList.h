@@ -22,6 +22,7 @@ public:
    void push_front(const T& data);
    T at(std::size_t index);
 
+   std::size_t ringListSize() { return this->size_; }
 };
 
 template<typename T>

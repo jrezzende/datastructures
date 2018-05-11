@@ -144,7 +144,7 @@ void App::generateVehicleEvents()
    int localTime;
    int nextEvent;
    
-   for (int i = 0; i < lanes->size(); i++) {
+   for (int i = 0; i < lanes->ringListSize(); i++) {
       currentLane= lanes->at(i);
       if (currentLane->isSource()) {
          localTime= actualTime;
@@ -196,7 +196,7 @@ void App::generateSemaphoreOpeningEvents()
 
    int localTime, nextEvent;
 
-   for (int i = 0; i < semaphores->size(); i += 2) {
+   for (int i = 0; i < semaphores->ringListSize(); i += 2) {
       localTime= actualTime;
       while (localTime < executionTime) {
          currentSemaphore= semaphores->at(i);
